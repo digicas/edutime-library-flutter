@@ -18,9 +18,9 @@ samples, guidance on mobile development, and a full API reference.
 1. git clone 
 2. run `flutter create --project-name=edutime --template=plugin .` in the project root dir - that recreates the IntelliJ config files for Android Studio setup.
 
-a) opening flutter project in Android Studio - use ## Open an existing Android Studio project ## with the project root.
+a) opening flutter project in Android Studio - use `Open an existing Android Studio project` with the project root.
 
-b) opening Android (Kotlin) only part in Android Studio - use ## Open an existing Android Studio project ## with the folder `.\example\android`.
+b) opening Android (Kotlin) only part in Android Studio - use `Open an existing Android Studio project` with the folder `.\example\android`. That will open the example app and also edutime module, which contains the Kotlin code for the plugin.
 
 
 In order to run flutter example application, type from within the project root:
@@ -30,10 +30,10 @@ In order to run flutter example application, type from within the project root:
 
 Or run it from within the Android Studio.
 
-Flutter ##example application## code is in `.\example\lib\main.dart`
+Flutter **example application** code is in `.\example\lib\main.dart`
 
-Dart ##package/plugin## code is in `.\lib\edutime.dart`
+Dart **package/plugin** code is in `.\lib\edutime.dart`
 
-Kotlin ##plugin## code is in `.\android\src\main\kotlin\cz\edukids\edutime\EdutimePlugin.kt`. 
+Kotlin **plugin** code is in `.\android\src\main\kotlin\cz\edukids\edutime\EdutimePlugin.kt`. 
 
 iOS and web code is yet to be implemented.
