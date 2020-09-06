@@ -1,36 +1,60 @@
 package cz.edukids.edutime
 
-import androidx.annotation.NonNull
-
-import io.flutter.embedding.engine.plugins.FlutterPlugin
+import android.util.Log
+import androidx.lifecycle.lifecycleScope
+import cz.edukids.edutime.dictionary.toResponse
+import cz.edukids.edutime.method.EduTimeMethodRegistry.invoke
+import cz.edukids.sdk.EduTimeSdk
+import cz.edukids.sdk.EduTimeSdkInstance
+import cz.edukids.sdk.model.EduError
 import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import io.flutter.plugin.common.PluginRegistry.Registrar
+import kotlinx.coroutines.launch
 
-/** EdutimePlugin */
-class EdutimePlugin: FlutterPlugin, MethodCallHandler {
-  /// The MethodChannel that will the communication between Flutter and native Android
-  ///
-  /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-  /// when the Flutter Engine is detached from the Activity
-  private lateinit var channel : MethodChannel
+class EduTimePlugin : ActivityAwarePlugin() {
 
-  override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "edutime")
-    channel.setMethodCallHandler(this)
-  }
+    private lateinit var instance: EduTimeSdkInstance
+    override val methodChannelName = "EduTime"
 
-  override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-    if (call.method == "getPlatformVersion") {
-      result.success("Android ${android.os.Build.VERSION.RELEASE}")
-    } else {
-      result.notImplemented()
+    override fun onAttached() {
+        EduTimeSdk().runCatching { getNewInstance(requireActivity().intent) }
+            .onSuccess { instance = it }
+            .onFailure {
+                Log.e(
+                    this::class.java.simpleName,
+                    "Cannot instantiate EduTimeSdk. Check intent for params"
+                )
+            }
     }
-  }
 
-  override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-    channel.setMethodCallHandler(null)
-  }
+    override fun onMethodCall(call: MethodCall, result: Result) {
+        if (!this::instance.isInitialized) {
+            return result.error(
+                "ERR-EDU-100",
+                "SDK is not initialized yet! Connect to activity.",
+                null
+            )
+        }
+
+        requireActivity().lifecycleScope.launch {
+            call.runCatching { invoke(instance) }
+                .onFailure {
+                    when (it) {
+                        is NoSuchElementException -> result.notImplemented()
+                        else -> result(it)
+                    }
+                }
+                .onSuccess { result(it) }
+        }
+    }
+
+    private operator fun Result.invoke(response: Any?) = when (response) {
+        // encountered library error that's been caught and is known
+        is EduError -> error("ERR-EDU-${response.code}", response.message, null)
+        // encountered any other uncaught error
+        is Throwable -> error("ERR-EDU-0", response.message, null)
+        // respond as usual
+        else -> success(response?.toResponse())
+    }
+
 }
