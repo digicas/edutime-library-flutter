@@ -13,10 +13,10 @@ import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
 import kotlinx.coroutines.launch
 
-class EduTimePlugin : ActivityAwarePlugin() {
+class EdutimePlugin : ActivityAwarePlugin() {
 
     private lateinit var instance: EduTimeSdkInstance
-    override val methodChannelName = "EduTime"
+    override val methodChannelName = "edutime"
 
     override fun onAttached() {
         EduTimeSdk().runCatching { getNewInstance(requireActivity().intent) }
@@ -63,7 +63,7 @@ class EduTimePlugin : ActivityAwarePlugin() {
 
         @JvmStatic
         fun registerWith(registrar: PluginRegistry.Registrar) {
-            val plugin = EduTimePlugin()
+            val plugin = EdutimePlugin()
             val channel = MethodChannel(registrar.messenger(), plugin.methodChannelName)
             channel.setMethodCallHandler(plugin)
         }
