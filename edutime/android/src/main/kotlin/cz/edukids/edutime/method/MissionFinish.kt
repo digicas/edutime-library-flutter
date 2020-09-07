@@ -14,7 +14,7 @@ class MissionFinish : Method<Unit?> {
             contractId = call.argument<String>(EduMissionFinishParams::contractId.name)!!,
             isSuccess = call.argument<Boolean>(EduMissionFinishParams::isSuccess.name)!!,
             pointsAcquired = call.argument<Int>(EduMissionFinishParams::pointsAcquired.name)!!,
-            dataBundle = call.argument<String?>(EduMissionFinishParams::dataBundle.name),
+            dataBundle = call.argument(EduMissionFinishParams::dataBundle.name)
         )
         instance.getMission().finish(params)
         return null
