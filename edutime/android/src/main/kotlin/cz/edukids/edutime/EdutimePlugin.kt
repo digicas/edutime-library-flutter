@@ -8,7 +8,9 @@ import cz.edukids.sdk.EduTimeSdk
 import cz.edukids.sdk.EduTimeSdkInstance
 import cz.edukids.sdk.model.EduError
 import io.flutter.plugin.common.MethodCall
+import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.PluginRegistry
 import kotlinx.coroutines.launch
 
 class EduTimePlugin : ActivityAwarePlugin() {
@@ -55,6 +57,17 @@ class EduTimePlugin : ActivityAwarePlugin() {
         is Throwable -> error("ERR-EDU-0", response.message, null)
         // respond as usual
         else -> success(response?.toResponse())
+    }
+
+    companion object {
+
+        @JvmStatic
+        fun registerWith(registrar: PluginRegistry.Registrar) {
+            val plugin = EduTimePlugin()
+            val channel = MethodChannel(registrar.messenger(), plugin.methodChannelName)
+            channel.setMethodCallHandler(plugin)
+        }
+
     }
 
 }
