@@ -1,7 +1,6 @@
 package cz.edukids.edutime
 
 import android.util.Log
-import androidx.lifecycle.lifecycleScope
 import cz.edukids.edutime.dictionary.toResponse
 import cz.edukids.edutime.method.EduTimeMethodRegistry.invoke
 import cz.edukids.sdk.EduTimeSdk
@@ -11,42 +10,55 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
-class EdutimePlugin : ActivityAwarePlugin() {
+class EdutimePlugin : ActivityAwarePlugin(), CoroutineScope by MainScope() {
 
     private lateinit var instance: EduTimeSdkInstance
     override val methodChannelName = "edutime"
 
     override fun onAttached() {
+        Log.i(tag(), "EduTimeSdk is being initialized")
         EduTimeSdk().runCatching { getNewInstance(requireActivity().intent) }
-            .onSuccess { instance = it }
-            .onFailure {
-                Log.e(
-                    this::class.java.simpleName,
-                    "Cannot instantiate EduTimeSdk. Check intent for params"
-                )
-            }
+                .onSuccess {
+                    instance = it
+                    Log.i(tag(), "Created EduTime instance")
+                }
+                .onFailure {
+                    Log.e(tag(), "Cannot instantiate EduTimeSdk. Check intent for params")
+                }
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
         if (!this::instance.isInitialized) {
+            Log.e(
+                    tag(),
+                    "Call to method ${call.method} cannot be processed. SDK is not initialized"
+            )
             return result.error(
-                "ERR-EDU-100",
-                "SDK is not initialized yet! Connect to activity.",
-                null
+                    "ERR-EDU-100",
+                    "SDK is not initialized yet! Connect to activity.",
+                    null
             )
         }
 
-        requireActivity().lifecycleScope.launch {
+        Log.i(tag(), "Starting call to ${call.method}")
+
+        launch {
             call.runCatching { invoke(instance) }
-                .onFailure {
-                    when (it) {
-                        is NoSuchElementException -> result.notImplemented()
-                        else -> result(it)
+                    .onFailure {
+                        Log.e(tag(), "Call to ${call.method} failed", it)
+                        when (it) {
+                            is NoSuchElementException -> result.notImplemented()
+                            else -> result(it)
+                        }
                     }
-                }
-                .onSuccess { result(it) }
+                    .onSuccess {
+                        Log.i(tag(), "Call to ${call.method} successful")
+                        result(it)
+                    }
         }
     }
 
@@ -66,8 +78,12 @@ class EdutimePlugin : ActivityAwarePlugin() {
             val plugin = EdutimePlugin()
             val channel = MethodChannel(registrar.messenger(), plugin.methodChannelName)
             channel.setMethodCallHandler(plugin)
+            plugin.activity = registrar.activity()
+            Log.i(tag(), "Registered with Flutter plugin registry")
         }
 
     }
 
 }
+
+inline fun <reified T : Any> T.tag() = this@tag::class.java.simpleName

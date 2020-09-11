@@ -8,7 +8,7 @@ class Edutime {
       const MethodChannel('edutime');
 
   static Future<String> get platformVersion async {
-    final String version = await _channel.invokeMethod('getPlatformVersion');
+    final String version = await _channel.invokeMethod('getCurrencyStats');
     return version;
   }
 }

@@ -1,15 +1,18 @@
 package cz.edukids.edutime
 
+import android.app.Activity
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodChannel
+import java.lang.RuntimeException
 
 abstract class ActivityAwarePlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware {
 
-    protected var activity: AppCompatActivity? = null
-        private set(value) {
+    protected var activity: Activity? = null
+        set(value) {
             field = value
             onAttached()
         }
@@ -29,12 +32,14 @@ abstract class ActivityAwarePlugin : FlutterPlugin, MethodChannel.MethodCallHand
 
     // region FlutterPlugin
     final override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        Log.i(tag(), "Attached to Flutter engine")
         channel = MethodChannel(binding.binaryMessenger, methodChannelName).also {
             it.setMethodCallHandler(this)
         }
     }
 
     final override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        Log.i(tag(), "Detached from Flutter engine")
         channel?.setMethodCallHandler(null)
         channel = null
     }
@@ -42,10 +47,12 @@ abstract class ActivityAwarePlugin : FlutterPlugin, MethodChannel.MethodCallHand
 
     // region ActivityAware
     final override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-        activity = binding.activity as AppCompatActivity
+        Log.i(tag(), "Attached to activity")
+        activity = binding.activity
     }
 
     final override fun onDetachedFromActivity() {
+        Log.i(tag(), "Detached from activity")
         activity = null
     }
 
