@@ -18,6 +18,6 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    expect(await Edutime.platformVersion, '42');
+    expect(await Edutime.getCurrencyStats, '42');
   });
 }

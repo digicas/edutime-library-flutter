@@ -27,7 +27,7 @@ class _MyAppState extends State<MyApp> {
     String timeCoins;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      timeCoins = await Edutime.platformVersion;
+      timeCoins = await Edutime.getCurrencyStats;
     } on PlatformException {
       timeCoins = 'Failed to get info on time coins.';
     }
