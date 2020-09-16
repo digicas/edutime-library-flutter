@@ -11,10 +11,21 @@ class Edutime {
   /// Requests current currency statistics. App can adjust the
   /// exercises to maximize the time user spends in the app by cherry picking longer tasks and
   /// vice versa.
-  static Future<String> get getCurrencyStats async {
+  static Future<CurrencyStats> get getCurrencyStats async {
     final Map currencyStatsMap = await _channel.invokeMethod('getCurrencyStats');
-    final CurrencyStats currencyStats = CurrencyStats.fromMap(currencyStatsMap);
+    final CurrencyStats currencyStats = CurrencyStats.fromChannelMap(currencyStatsMap);
     print (currencyStats);
-    return currencyStats.toString();
+    return currencyStats;
   }
+
+  /// Requests current time constraints on app. App can adjust the
+  /// exercises to maximize the time user spends in the app by cherry picking longer tasks and
+  /// vice versa.
+  static Future<TimeConstraints> get getTimeConstraints async {
+    final Map timeConstraintsMap = await _channel.invokeMethod('getTimeConstraints');
+    final TimeConstraints timeConstraints = TimeConstraints.fromChannelMap(timeConstraintsMap);
+    print (timeConstraints);
+    return timeConstraints;
+  }
+
 }

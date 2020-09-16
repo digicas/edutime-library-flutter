@@ -1,3 +1,4 @@
+import 'package:edutime/model.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -15,56 +16,67 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _timeCoins = 'Unknown';
   String resultsText = "";
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
+    updateTimeCoinsInfo();
+    // initPlatformState();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String timeCoins;
+  // // Platform messages are asynchronous, so we initialize in an async method.
+  // Future<void> initPlatformState() async {...}
+
+  /// Example of getting the information on time coins amounts
+  /// Platform messages are asynchronous, so we call them in an async method.
+  Future<void> updateTimeCoinsInfo() async {
+    CurrencyStats timeCoins;
+    String resultText;
+    print("Checking time coins info");
     // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      timeCoins = await Edutime.getCurrencyStats;
-    } on PlatformException {
-      timeCoins = 'Failed to get info on time coins.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _timeCoins = timeCoins;
-    });
-  }
-
-  Future<void> updateTimeCoins() async {
-    String timeCoins;
-    print("Checking time coins");
     try {
       Timeline.startSync('getCurrencyStats');
       timeCoins = await Edutime.getCurrencyStats;
       Timeline.finishSync();
+      resultText = timeCoins.toString();
     } on PlatformException {
-      timeCoins = 'Failed to get info on time coins.';
+      resultText = 'Failed to get info on time coins.';
     }
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
     if (!mounted) return;
     setState(() {
-      _timeCoins = timeCoins;
-      logResult(timeCoins);
+      logResult(resultText);
     });
   }
+
+  /// The approach is similar for other cases
+  Future<void> getAppTimeConstraints() async {
+    TimeConstraints timeConstraints;
+    String resultText;
+    print("Checking app's time constraints info");
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      Timeline.startSync('getTimeConstraints');
+      timeConstraints = await Edutime.getTimeConstraints;
+      Timeline.finishSync();
+      resultText = timeConstraints.toString();
+    } on PlatformException {
+      resultText = 'Failed to get info on app`s time constraints.';
+    }
+    logResult(resultText);
+  }
+
+
+
 
   void logResult(String result) {
     var now = DateTime.now();
     String nowString = "${now.hour}:${now.minute}:${now.second}.${now.millisecond}";
 
+    if (!mounted) return;
     setState(() {
       resultsText = "$nowString: $result \n\n" + resultsText;
     });
@@ -83,9 +95,13 @@ class _MyAppState extends State<MyApp> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               RaisedButton.icon(
-                  icon: Icon(Icons.refresh),
+                  icon: Icon(Icons.monetization_on),
                   label: Text("Check time coins amount"),
-                  onPressed: updateTimeCoins),
+                  onPressed: updateTimeCoinsInfo),
+              RaisedButton.icon(
+                  icon: Icon(Icons.cancel_schedule_send),
+                  label: Text("Check time constraints for current app"),
+                  onPressed: getAppTimeConstraints),
               Expanded(
                   child: Container(
                     color: Color(0xaabbccdd),

@@ -10,7 +10,7 @@ void main() {
 
   setUp(() {
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
-      return CurrencyStats.fromMap({"currentAmount": 76, "earnedInInstance": 32});
+      return CurrencyStats.fromChannelMap({"currentAmount": 76, "earnedInInstance": 32});
     });
   });
 
