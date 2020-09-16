@@ -2,30 +2,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-
-// Mapping of data structures
-// https://flutter.dev/docs/development/platform-integration/platform-channels#codec
-
-/// models
-
-class CurrencyStats {
-  /// Current amount of time coins the user is holding
-  double currentAmount;
-  /// Amount of time coins earned in the app's currently running instance
-  double earnedInInstance;
-
-  /// Constructor for deserialization of data received from the channel
-  CurrencyStats.fromMap(Map channelData) {
-    this.currentAmount = channelData["currentAmount"];
-    this.earnedInInstance = channelData["earnedInInstance"];
-  }
-
-  String toString() {
-    return "currentAmount: $currentAmount, earnedInInstance: $earnedInInstance";
-  }
-}
-
-///
+import './model.dart';
 
 class Edutime {
   static const MethodChannel _channel =
