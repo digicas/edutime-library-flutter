@@ -8,9 +8,7 @@ class Edutime {
   static const MethodChannel _channel =
       const MethodChannel('edutime');
 
-  /// Requests current currency statistics. App can adjust the
-  /// exercises to maximize the time user spends in the app by cherry picking longer tasks and
-  /// vice versa.
+  /// Requests current currency statistics.
   static Future<CurrencyStats> get getCurrencyStats async {
     final Map currencyStatsMap = await _channel.invokeMethod('getCurrencyStats');
     final CurrencyStats currencyStats = CurrencyStats.fromChannelMap(currencyStatsMap);
@@ -18,9 +16,9 @@ class Edutime {
     return currencyStats;
   }
 
-  /// Requests current time constraints on app. App can adjust the
-  /// exercises to maximize the time user spends in the app by cherry picking longer tasks and
-  /// vice versa.
+  /// Requests current time constraints on app.
+  /// App can adjust the exercises to maximize the time user spends in the app
+  /// by cherry picking longer tasks and vice versa.
   static Future<TimeConstraints> get getTimeConstraints async {
     final Map timeConstraintsMap = await _channel.invokeMethod('getTimeConstraints');
     final TimeConstraints timeConstraints = TimeConstraints.fromChannelMap(timeConstraintsMap);
@@ -28,4 +26,11 @@ class Edutime {
     return timeConstraints;
   }
 
+  /// Requests current setup of
+  static Future<ScreenTimeCategorySetup> get getScreenTimeCategorySetup async {
+    final Map screenTimeCategorySetupMap = await _channel.invokeMethod('getScreenTimeCategoryConstraints');
+    final ScreenTimeCategorySetup screenTimeCategorySetup = ScreenTimeCategorySetup.fromChannelMap(screenTimeCategorySetupMap);
+    print (screenTimeCategorySetup);
+    return screenTimeCategorySetup;
+  }
 }

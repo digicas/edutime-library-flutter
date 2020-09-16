@@ -46,3 +46,62 @@ class TimeConstraints {
     return "Time constraints: startTime: $startTime, stopTime: $stopTime";
   }
 }
+
+/// Configuration and state of the launcher's category (app folder)
+class ScreenTimeCategory {
+  /// Category IDs are normalised and unique // TODO clarify - opravdu? - If ano, tak nekam normativne vypsat
+  String id;
+
+  /// Category name as defined by child's parent
+  String name;
+
+  /// Category description (as defined by EduKids)
+  String description; // TODO vyjasnit, proc si predavame i description?
+
+  /// Category might be currently locked due to rules set by the child's parent
+  bool isLocked;
+
+  /// Category is currently selected as default
+  bool isSelected; // TODO k cemu toto mame?
+
+  /// Constructor for deserialization of data received from the channel
+  ScreenTimeCategory.fromChannelMap(Map<String, dynamic> channelData) {
+    this.id = channelData["id"];
+    this.name = channelData["name"];
+    this.description = channelData["description"];
+    this.isLocked = channelData["isLocked"];
+    this.isSelected = channelData["isSelected"];
+  }
+
+  String toString() {
+    return "cat: $id: $name: ${isLocked ? '' : 'un'}locked";
+  }
+}
+
+/// Setup of the screentime categories for the launcher's session
+/// Reflects Kotlin's ScreenTimeCategoryConstraints // TODO change @kotlin
+class ScreenTimeCategorySetup {
+  /// Launcher's currently running category (in this time period)
+  ScreenTimeCategory currentCategory;
+
+  /// Launcher's category assigned to this app
+  ScreenTimeCategory assignedCategory;
+
+  /// Available categories under which the app can be listed (up to cca 10)
+  List<ScreenTimeCategory> availableCategories;
+
+  /// Constructor for deserialization of data received from the channel
+  ScreenTimeCategorySetup.fromChannelMap(Map<String, dynamic> channelData) {
+    this.currentCategory = channelData["currentCategory"];
+    this.assignedCategory = channelData["assignedCategory"];
+    List<Map> availableCategoriesMaps = channelData["availableCategories"];
+    this.availableCategories = availableCategoriesMaps
+        .map((m) => ScreenTimeCategory.fromChannelMap(m))
+        .toList();
+  }
+
+  @override
+  String toString() {
+    return "catset: current: $currentCategory, assigned: $assignedCategory, available: $availableCategories";
+  }
+}
