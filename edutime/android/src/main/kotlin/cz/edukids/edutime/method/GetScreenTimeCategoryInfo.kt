@@ -1,17 +1,17 @@
 package cz.edukids.edutime.method
 
 import cz.edukids.sdk.EduTimeSdkInstance
-import cz.edukids.sdk.model.ScreenTimeCategoryConstraints
+import cz.edukids.sdk.model.ScreenTimeCategoryInfo
 import io.flutter.plugin.common.MethodCall
 
-class GetScreenTimeCategoryConstraints : Method<ScreenTimeCategoryConstraints> {
+class GetScreenTimeCategoryInfo : Method<ScreenTimeCategoryInfo> {
 
     override val methodName = EduTimeSdkInstance::getScreenTimeCategoryConstraints.name
 
     override suspend fun invoke(
         instance: EduTimeSdkInstance,
         call: MethodCall
-    ): ScreenTimeCategoryConstraints {
+    ): ScreenTimeCategoryInfo {
         return instance.getScreenTimeCategoryConstraints().getOrThrow()
     }
 
