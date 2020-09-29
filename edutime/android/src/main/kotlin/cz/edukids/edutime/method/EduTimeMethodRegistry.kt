@@ -10,7 +10,7 @@ object EduTimeMethodRegistry {
 
     private val methods = listOf<Method<*>>(
         GetCurrencyStats(),
-        GetScreenTimeCategoryConstraints(),
+        GetScreenTimeCategoryInfo(),
         GetSkillLevel(),
         GetTimeConstraints(),
         MissionComplete(),
