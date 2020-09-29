@@ -6,13 +6,13 @@ import io.flutter.plugin.common.MethodCall
 
 class GetScreenTimeCategoryInfo : Method<ScreenTimeCategoryInfo> {
 
-    override val methodName = EduTimeSdkInstance::getScreenTimeCategoryConstraints.name
+    override val methodName = EduTimeSdkInstance::getScreenTimeCategoryInfo.name
 
     override suspend fun invoke(
         instance: EduTimeSdkInstance,
         call: MethodCall
     ): ScreenTimeCategoryInfo {
-        return instance.getScreenTimeCategoryConstraints().getOrThrow()
+        return instance.getScreenTimeCategoryInfo().getOrThrow()
     }
 
 }
