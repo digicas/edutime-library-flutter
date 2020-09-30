@@ -70,16 +70,16 @@ class _MyAppState extends State<MyApp> {
   }
 
   /// The approach is similar for other cases
-  Future<void> getScreenTimeCategorySetup() async {
-    ScreenTimeCategorySetup screenTimeCategorySetup;
+  Future<void> getScreenTimeCategoryInfo() async {
+    ScreenTimeCategoryInfo screenTimeCategoryInfo;
     String resultText;
     print("Checking app's time constraints info");
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       Timeline.startSync('getScreenTimeCategorySetup');
-      screenTimeCategorySetup = await Edutime.getScreenTimeCategorySetup;
+      screenTimeCategoryInfo = await Edutime.getScreenTimeCategoryInfo;
       Timeline.finishSync();
-      resultText = screenTimeCategorySetup.toString();
+      resultText = screenTimeCategoryInfo.toString();
     } on PlatformException {
       resultText = 'Failed to get info on screentime categories.';
     }
@@ -121,7 +121,7 @@ class _MyAppState extends State<MyApp> {
               RaisedButton.icon(
                   icon: Icon(Icons.category),
                   label: Text("Check relevant screentime categories"),
-                  onPressed: getScreenTimeCategorySetup),
+                  onPressed: getScreenTimeCategoryInfo),
               Expanded(
                   child: Container(
                     color: Color(0xaabbccdd),

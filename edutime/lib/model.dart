@@ -13,7 +13,7 @@ class CurrencyStats {
   double earnedInInstance;
 
   /// Constructor for deserialization of data received from the channel
-  CurrencyStats.fromChannelMap(Map<String, double> channelData) {
+  CurrencyStats.fromChannelMap(Map channelData) {
     this.currentAmount = channelData["currentAmount"];
     this.earnedInInstance = channelData["earnedInInstance"];
   }
@@ -24,7 +24,7 @@ class CurrencyStats {
 }
 
 /// TimeConstraints of the app has the information on launcher's time category
-/// propagated time limits towards the app
+/// which applies time limits towards the app
 /// To be used in the [getTimeConstraints] call
 class TimeConstraints {
   /// Datetime at which the app can be (in the future) or was (in the past) started.
@@ -35,7 +35,8 @@ class TimeConstraints {
   DateTime stopTime;
 
   /// Constructor for deserialization of data received from the channel
-  TimeConstraints.fromChannelMap(Map<String, int> channelData) {
+  /// expects startTimestamp and stopTimestamp to be int
+  TimeConstraints.fromChannelMap(Map channelData) {
     this.startTime =
         DateTime.fromMillisecondsSinceEpoch(channelData["startTimestamp"]);
     this.stopTime =
@@ -49,26 +50,24 @@ class TimeConstraints {
 
 /// Configuration and state of the launcher's category (app folder)
 class ScreenTimeCategory {
-  /// Category IDs are normalised and unique // TODO clarify - opravdu? - If ano, tak nekam normativne vypsat
+  /// Category IDs are normalised and unique:
+  /// OFF, BASIC, EDU, CREATE, GROWTH, CONSUME
   String id;
 
   /// Category name as defined by child's parent
   String name;
 
-  /// Category description (as defined by EduKids)
-  String description; // TODO vyjasnit, proc si predavame i description?
-
   /// Category might be currently locked due to rules set by the child's parent
   bool isLocked;
 
-  /// Category is currently selected as default
-  bool isSelected; // TODO k cemu toto mame?
+  /// Whether the category is applied at the current moment.
+  /// Current means at the time of SDK request.
+  bool isSelected;
 
   /// Constructor for deserialization of data received from the channel
-  ScreenTimeCategory.fromChannelMap(Map<String, dynamic> channelData) {
+  ScreenTimeCategory.fromChannelMap(Map channelData) {
     this.id = channelData["id"];
     this.name = channelData["name"];
-    this.description = channelData["description"];
     this.isLocked = channelData["isLocked"];
     this.isSelected = channelData["isSelected"];
   }
@@ -79,8 +78,7 @@ class ScreenTimeCategory {
 }
 
 /// Setup of the screentime categories for the launcher's session
-/// Reflects Kotlin's ScreenTimeCategoryConstraints // TODO change @kotlin
-class ScreenTimeCategorySetup {
+class ScreenTimeCategoryInfo {
   /// Launcher's currently running category (in this time period)
   ScreenTimeCategory currentCategory;
 
@@ -91,7 +89,7 @@ class ScreenTimeCategorySetup {
   List<ScreenTimeCategory> availableCategories;
 
   /// Constructor for deserialization of data received from the channel
-  ScreenTimeCategorySetup.fromChannelMap(Map<String, dynamic> channelData) {
+  ScreenTimeCategoryInfo.fromChannelMap(Map channelData) {
     this.currentCategory = channelData["currentCategory"];
     this.assignedCategory = channelData["assignedCategory"];
     List<Map> availableCategoriesMaps = channelData["availableCategories"];
