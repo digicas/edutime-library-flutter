@@ -21,6 +21,8 @@ class EdutimePlugin : ActivityAwarePlugin(), CoroutineScope by MainScope() {
     private lateinit var instance: EduTimeSdkInstance
     override val methodChannelName = "edutime"
 
+    val isInitialized get() = this::instance.isInitialized
+
     override fun onAttached() {
         info("EduTimeSdk is being initialized")
         EduTimeSdk().runCatching { getNewInstance(requireActivity().intent) }
@@ -34,18 +36,26 @@ class EdutimePlugin : ActivityAwarePlugin(), CoroutineScope by MainScope() {
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
-        if (!this::instance.isInitialized) {
-            error("Call to method ${call.method} cannot be processed. SDK is not initialized")
-            return result.error(
-                "ERR-EDU-100",
-                "SDK is not initialized yet! Connect to activity.",
-                null
-            )
-        }
-
-        info("Starting call to ${call.method}")
-
         launch {
+            // probes and fetches request from non instance methods
+            call.invoke(this@EdutimePlugin)?.let {
+                result(it)
+                return@launch
+            }
+
+            // all other methods require the instance to be initialized so we fail early and return error
+            if (!isInitialized) {
+                error("Call to method ${call.method} cannot be processed. SDK is not initialized")
+                return@launch result.error(
+                    "ERR-EDU-100",
+                    "SDK is not initialized yet! Connect to activity.",
+                    null
+                )
+            }
+
+            info("Starting call to ${call.method}")
+
+            // probes and fetched all available methods and returns result or fails with notImplemented()
             call.runCatching { invoke(instance) }
                 .onFailure {
                     error("Call to ${call.method} failed", it)
